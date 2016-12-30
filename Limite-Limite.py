@@ -363,7 +363,7 @@ def mainGameLoop(playersNameList,white_cards,black_cards):
         czar.unpack()
         
         #Check if the turn winner has win the game
-        if(players[czar.getWinnerID()].getPoint().get()>5):
+        if(players[czar.getWinnerID()].getPoint().get()>=8):
             winner_id = czar.getWinnerID()
         
         #Change the Czar
@@ -371,7 +371,7 @@ def mainGameLoop(playersNameList,white_cards,black_cards):
         if(czar_id>=len(players)):
             czar_id =0
         
-    showInformation("","This game winner is "+players[winner_id]+"!")
+    showinfo("","This game winner is "+players[winner_id].getName()+"!")
 
 ## Start function
 root = Tk()
