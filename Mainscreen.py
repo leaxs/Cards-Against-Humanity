@@ -33,11 +33,12 @@ class MainScreen:
             self.mainscreen = mainscreen
         def __call__(self):
             self.mainscreen.decks = []
-            for widget in self.mainscreen.frame_decklist.winfo_children():
+            for widget in (self.mainscreen).frame_decklist.winfo_children():
                 widget.destroy()
                 
-            self.mainscreen.getCardInDirectory(self.mainscreen.decks,self.mainscreen.frame_decklist)
+            (self.mainscreen).getCardInDirectory((self.mainscreen).decks,(self.mainscreen).frame_decklist)
     
+    #Hold information of a deck
     class Carddeck:
         def __init__(self,name,var):
             self.name = name.split('.')[0]
@@ -52,7 +53,7 @@ class MainScreen:
                     isCall = False
                     continue
                 if(isCall):
-                    (self.calls).append(line[:-2])
+                    (self.calls).append(line[:-2])      #-2 to remove \r
                 else:
                     (self.reponses).append(line[:-2])
             f.close()
@@ -68,6 +69,7 @@ class MainScreen:
         def isEnable(self):
             return (self.enable).get()
         
+        #Information for main screen display (name, calls numbers, reponses numbers)
         def getDeckNameinfo(self):
             return (self.name+" (c:"+str(len(self.calls))+" /r:"+str(len(self.reponses))+")")
     
@@ -126,7 +128,7 @@ class MainScreen:
         self.frame_decklist = Frame(frame_deck)
         self.getCardInDirectory(self.decks,self.frame_decklist)
         
-        self.frame_decklist.pack(fill="both", expand="yes")
+        (self.frame_decklist).pack(fill="both", expand="yes")
         Button(frame_deck, text="Refresh", command=self.refresh(self)).pack(fill="both", expand="yes", side=BOTTOM)
         
         #Frame_parameters
@@ -146,7 +148,7 @@ class MainScreen:
         Button(buttonframe, text="Remove", command=self.removingPlayer(self)).pack(side=RIGHT)
         Button(buttonframe, text="Add", command=self.addingPlayer(self)).pack(side=RIGHT)
        
-        self.players_list.pack(fill="both", expand="yes")
+        (self.players_list).pack(fill="both", expand="yes")
         buttonframe.pack(fill="both", expand="yes", side=BOTTOM)
         
         #PlayButton
@@ -165,7 +167,7 @@ class MainScreen:
         return [int((self.time_limite).get()),int((self.score_limite).get()),(self.same_card_several_occurence).get()]
 ##
 root = Tk()
-root.title("Cards Against Humanity, v.0.2<")
+root.title("Cards Against Humanity, v.0.2")
 root.iconbitmap('icon.ico')
 root.resizable(0,0)
 MainScreen(root)      

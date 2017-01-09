@@ -101,16 +101,16 @@ class Game:
         
         #To show and hide player deck on the main screen
         def pack(self):
-            self.playerFrame.pack(expand=True)
+            (self.playerFrame).pack(expand=True)
         def unpack(self):
-            self.playerFrame.pack_forget()
+            (self.playerFrame).pack_forget()
         
         def startTurn(self):
-            self.playing.set(True)
+            (self.playing).set(True)
             for i in self.selectedCard:
                 i.set('')
         def endTurn(self,forced):
-            self.playing.set(False)
+            (self.playing).set(False)
             self.hasCard = forced
         def isPlaying(self):
             return self.playing
@@ -158,71 +158,91 @@ class Game:
                 return self.playerID
             def setPlayerCard(self,playerCard):
                 for i in range(len(playerCard)):
-                    self.playerCard[i].set(playerCard[i].get())
+                    (self.playerCard)[i].set(playerCard[i].get())
             def getPlayerCard(self):
                 return self.playerCard  
         
         #Czar constructor: build czar GUI
         def __init__(self,players,frame_center):
-            self.binding = []
             self.czarChoose = IntVar()
             self.playing = BooleanVar()
-            self.cardToJudge=[]
+            self.cardToJudge=[self.cardSelection() for i in players]
+            
+            #Czar frame
             self.czarFrame = Frame(frame_center, borderwidth=2, relief=SUNKEN)
-            for i in range(len(players)-1):
-                (self.cardToJudge).append(self.cardSelection())
-                cardFrame = Frame(self.czarFrame, borderwidth=2, relief=SUNKEN)
-                cardFrame.pack(fill="both", expand="yes")
-                Radiobutton(cardFrame, variable=self.czarChoose, value=i).pack(anchor=W)
-                Label(cardFrame,textvariable=(self.cardToJudge)[i].getPlayerCard()[0]).pack()
-                Label(cardFrame,textvariable=(self.cardToJudge)[i].getPlayerCard()[1]).pack()
-                Label(cardFrame,textvariable=(self.cardToJudge)[i].getPlayerCard()[2]).pack()
+            
+            self.czarCardToChooseFrame = Frame(self.czarFrame)
+            self.czarCardToChooseFrame.pack(fill="both", expand="yes")
             Button(self.czarFrame, text="Choose", command=self.Choose(self,players)).pack()
         
         #Shuffle the card choose by the player to be anonymous
         def shuffle(self,czarID,players):
-            self.binding=[]
+            for widget in (self.czarCardToChooseFrame).winfo_children():
+                widget.destroy()
+            
+            #Re-attribut all cardToJudge to each player
             for i in range(len(players)):
-                if(i!=czarID or not(players[i].hasCard())):
-                    self.binding.append(i)
-            rd.shuffle(self.binding)
-            for i in range(len(self.binding)):
-                self.cardToJudge[i].setPlayerID(self.binding[i])
-                self.cardToJudge[i].setPlayerCard(players[self.binding[i]].getSelectedCard())
+                if(i!=czarID and players[i].hasCard):
+                    (self.cardToJudge)[i].setPlayerID(i)
+                    (self.cardToJudge)[i].setPlayerCard(players[i].getSelectedCard())
+                else:
+                    (self.cardToJudge)[i].setPlayerID(-1)
+            rd.shuffle(self.cardToJudge)
+            
+            #Checking if players has played and show his submission
+            choosableDeck = 0
+            for cards in self.cardToJudge:
+                if(cards.getPlayerID() == -1):
+                    continue
+                cardFrame = Frame(self.czarCardToChooseFrame, borderwidth=2, relief=SUNKEN)
+                cardFrame.pack(fill="both", expand="yes")
+                Radiobutton(cardFrame, variable=self.czarChoose, value=choosableDeck).pack(anchor=W)
+                Label(cardFrame,textvariable=cards.getPlayerCard()[0]).pack()
+                Label(cardFrame,textvariable=cards.getPlayerCard()[1]).pack()
+                Label(cardFrame,textvariable=cards.getPlayerCard()[2]).pack()
+                choosableDeck+=1
+                self.czarChoose.set(cards.getPlayerID())
+            
+            #if no ones has played, a default value is set
+            if(choosableDeck==0):
+                self.czarChoose.set(-1)
+            #Check if czar can play (if there is enought deck to have a choice)
+            return choosableDeck>1
         
         def getWinnerID(self):
-            return self.cardToJudge[self.czarChoose.get()].getPlayerID()
+            return (self.cardToJudge)[self.czarChoose.get()].getPlayerID()
         
         def startTurn(self):
-            self.playing.set(True)
+            (self.playing).set(True)
         def endTurn(self):
-            self.playing.set(False)
+            (self.playing).set(False)
         def isPlaying(self):
             return self.playing
         
         def pack(self):
-            self.czarFrame.pack(fill="both", expand="yes")
+            (self.czarFrame).pack(fill="both", expand="yes")
         def unpack(self):
-            self.czarFrame.pack_forget()
+            (self.czarFrame).pack_forget()
     
     class Timer:
         def __init__(self,frame_side,time,timevar):
             self.time = time
             self.timevar = timevar
             self.frame_side = frame_side
+        
         def launch(self,player):
             self.player = player
             self.remaining_time = self.time
-            self.timevar.set("Remaining time: "+str(self.remaining_time)+"s")
-            self.frame_side.after(1000, self.tick)
-            
+            (self.timevar).set("Remaining time: "+str(self.remaining_time)+"s")
+            (self.frame_side).after(1000, self.tick)
+        
         def tick(self):
-            self.timevar.set("Remaining time: "+str(self.remaining_time)+"s")
             self.remaining_time -=1
+            self.timevar.set("Remaining time: "+str(self.remaining_time)+"s")
             if(self.remaining_time<=0):
-                self.player.endTurn(True)
+                (self.player).endTurn(True)
             else:
-                self.frame_side.after(1000, self.tick)
+                (self.frame_side).after(1000, self.tick)
     ##
     def __init__(self,root,playerslist,calls,reponses,gameParameters):
         #Class variable
@@ -251,22 +271,28 @@ class Game:
         self.gameWindows.title("Cards Against Humanity : Game")
         self.gameWindows.iconbitmap('icon.ico')
         
+        #Side frame
         frame_side = Frame(self.gameWindows)
         Label(frame_side, textvariable = self.czarName).grid(row=0,column=0)
+        frame_side.grid(row=0,column=0,rowspan=2)
+        
         self.frame_points = LabelFrame(frame_side, text="Scoreboard")
         self.frame_points.grid(row=1,column=0)
         frame_information = LabelFrame(frame_side, text="Information")
         frame_information.grid(row=2,column=0)
+        
         Label(frame_information, textvariable = self.turnOf).grid(row=0,columnspan=2)
         Label(frame_information, textvariable = self.remaningTime).grid(row=1,column=0)
         
+        #Center frame
         frame_center = Frame(self.gameWindows)
         frame_center.grid(row=1,column = 1,rowspan = 2)
         Label(frame_center, textvariable = self.showCall).pack(side=TOP)
-        frame_side.grid(row=0,column=0,rowspan=2)
         
+        #Check if the Timer is needed for the game
         if(self.time_limite != 0):
             self.timer = self.Timer(frame_side,self.time_limite,self.remaningTime)
+            
         #Create a Player class for each player
         for pl in playerslist:
             (self.players).append(self.Player(pl,frame_center))
@@ -290,6 +316,7 @@ class Game:
             if(self.same_card_several_occurence):
                 (self.gameReponses).append(card)
     
+    #Update the side scoreboard (czar and point)
     def update_scoreboard(self):
         for widget in (self.frame_points).winfo_children():
             widget.destroy()
@@ -321,10 +348,11 @@ class Game:
             (self.players)[i].unpack()
             
         #Czar selection
+        (self.turnOf).set("Turn of : "+(self.players)[self.czar_id].getName())
         (self.czar).pack()
         (self.czar).startTurn()
-        (self.czar).shuffle(self.czar_id,self.players)
-        (self.gameWindows).wait_variable((self.czar).isPlaying())
+        if((self.czar).shuffle(self.czar_id,self.players)):
+            (self.gameWindows).wait_variable((self.czar).isPlaying())
         (self.czar).unpack()
         
         #Change the Czar
