@@ -61,7 +61,7 @@ class Game:
                     showerror("","You should only select "+str((self.player).whiteCardNumber)+" card!")
                     return
                 #End the player turn
-                (self.player).endTurn(False)
+                (self.player).endTurn(True)
         
         #Player constructor
         def __init__(self,name,gameWindows):
@@ -109,9 +109,9 @@ class Game:
             (self.playing).set(True)
             for i in self.selectedCard:
                 i.set('')
-        def endTurn(self,forced):
+        def endTurn(self,hasChooseCard):
             (self.playing).set(False)
-            self.hasCard = forced
+            self.hasCard = hasChooseCard
         def isPlaying(self):
             return self.playing
         def hasCard(self):
@@ -182,6 +182,7 @@ class Game:
             
             #Re-attribut all cardToJudge to each player
             for i in range(len(players)):
+                print(players[i].hasCard)
                 if(i!=czarID and players[i].hasCard):
                     (self.cardToJudge)[i].setPlayerID(i)
                     (self.cardToJudge)[i].setPlayerCard(players[i].getSelectedCard())
@@ -207,6 +208,7 @@ class Game:
             if(choosableDeck==0):
                 self.czarChoose.set(-1)
             #Check if czar can play (if there is enought deck to have a choice)
+            print(choosableDeck,choosableDeck>1)
             return choosableDeck>1
         
         def getWinnerID(self):
@@ -240,7 +242,7 @@ class Game:
             self.remaining_time -=1
             self.timevar.set("Remaining time: "+str(self.remaining_time)+"s")
             if(self.remaining_time<=0):
-                (self.player).endTurn(True)
+                (self.player).endTurn(False)
             else:
                 (self.frame_side).after(1000, self.tick)
     ##
