@@ -1,7 +1,7 @@
-Cards Against Humanity, python version by leaxs, v:0.1
+Cards Against Humanity, python version by leaxs, v0.2
 
-The game use carddeck located on Carddeck directory.
-Each deck must follow the following patern in order to be used in the game:
-blacks cards
-\end
-whitescards
+Carddek must be put in Carddeck folder.
+Each carddeck must contain calls card then "/end" and finaly responses card to be useable.
+default carddeck is an adapted deck from https://www.cardcastgame.com/
+
+Currently need a python installation with compiler to be played.
