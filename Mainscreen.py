@@ -5,6 +5,8 @@ from tkinter import *
 from tkinter.messagebox import *
 from tkinter.simpledialog import *
 
+import json as js
+import requests
 import codecs
 import os 
 import Game 
@@ -42,24 +44,25 @@ class MainScreen:
     class Carddeck:
         def __init__(self,name,var):
             self.name = name.split('.')[0]
-            self.reponses = []
+            self.responses = []
             self.calls = []
             self.enable = var
+
+            cards = js.load(codecs.open("Carddeck/"+name, 'r', 'utf-8-sig'))
             
-            isCall = True
-            f = codecs.open("Carddeck/"+name, encoding='utf-8')
-            for line in f:
-                if("\end"in line):
-                    isCall = False
-                    continue
-                if(isCall):
-                    (self.calls).append(line[:-2])      #-2 to remove \r
-                else:
-                    (self.reponses).append(line[:-2])
-            f.close()
+            for card in cards['calls']:
+                rawcall = card['text']
+                call = ""
+                for i in rawcall:
+                    call+=i+"__"
+                self.calls.append(call[:-2])
+            
+            for card in cards["responses"]:
+                self.responses.append(card["text"][0])
         
-        def getReponses(self):
-            return self.reponses
+            
+        def getResponses(self):
+            return self.responses
         def getCalls(self):
             return self.calls
         
@@ -71,7 +74,7 @@ class MainScreen:
         
         #Information for main screen display (name, calls numbers, reponses numbers)
         def getDeckNameinfo(self):
-            return (self.name+" (c:"+str(len(self.calls))+" /r:"+str(len(self.reponses))+")")
+            return (self.name+" (c:"+str(len(self.calls))+" /r:"+str(len(self.responses))+")")
     
     #Start button manager
     class StartGame:
@@ -89,7 +92,7 @@ class MainScreen:
             calls = []
             for deck in (self.mainscreen).decks:
                 if(deck.isEnable()):
-                    reponses.extend(deck.getReponses())
+                    reponses.extend(deck.getResponses())
                     calls.extend(deck.getCalls())
             #Check if there is at least one call and one reponse cards
             if(len(calls) == 0 and len(reponses)==0):
@@ -114,6 +117,12 @@ class MainScreen:
         self.score_limite = None
         self.same_card_several_occurence = BooleanVar()
         self.root = root
+        
+        #Menu
+        menubar = Menu(root)
+        menubar.add_command(label="Import deck from cardcastgame.com", command=self.importDeck)
+        #menubar.add_command(label="Export deck as cards in a PDF", command=self.exportDeck)
+        root.config(menu=menubar)
         
         #Frame 
         frame_deck = LabelFrame(root, text="Game deck(s)")
@@ -165,6 +174,23 @@ class MainScreen:
             
     def getGameParameters(self):
         return [int((self.time_limite).get()),int((self.score_limite).get()),(self.same_card_several_occurence).get()]
+        
+    def importDeck(self):
+        deckid = askstring("Get carddeck.com deck","Deck ID?")
+        if(deckid == None):
+            return
+        deckInfo = requests.get("https://api.cardcastgame.com/v1/decks/"+deckid).json()
+        deckCards = requests.get("https://api.cardcastgame.com/v1/decks/"+deckid+"/cards").json()
+        
+        deckToSave = open("Carddeck/"+deckInfo["name"]+".json", "w")
+        deckToSave.write(js.dumps(deckCards))
+        deckToSave.close()
+        self.refresh(self)
+        return
+        
+    def exportDeck(self):
+        #TODO
+        return
 ##
 root = Tk()
 root.title("Cards Against Humanity, v.0.2")
