@@ -1,13 +1,13 @@
 ﻿{
 	"calls":
 	[
-		{"text":["Si j'étais President, je créerai le ministère de __."]},
-		{"text":["__ : des heures d'amusement garanties !"]},
-		{"text":["Comment j'ai perdu ma virginité ? __, et c'était génial."]},
-		{"text":["Je préfère largement __ que __."]},
-		{"text":["__ ? Comme ma bite !"]},
-		{"text":["Le prochain roman de J.K Rowling : \"Harry Potter et __ \"."]},
-		{"text":["Qu'y a-t-il de pire qu'Hitler ? __ !"]},
+		{"text":["Si j'étais President, je créerai le ministère de ","."]},
+		{"text":[""," : des heures d'amusement garanties !"]},
+		{"text":["Comment j'ai perdu ma virginité ? ",", et c'était génial."]},
+		{"text":["Je préfère largement "," que ","."]},
+		{"text":[""," ? Comme ma bite !"]},
+		{"text":["Le prochain roman de J.K Rowling : \"Harry Potter et "," \"."]},
+		{"text":["Qu'y a-t-il de pire qu'Hitler ? "," !"]},
 		{"text":["",". Génial en théorie, pas terrible dans la pratique."]},
 		{"text":["Si j'étais un strip-teaser, on m'appellerait \"","\"."]},
 		{"text":["Les vieux ne comprendront jamais la joie de ","."]},
