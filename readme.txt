@@ -8,7 +8,7 @@ The save format is JSON and must follow this scheme:
   [
 	{"text":["One answer","."]},
    	{"text":["Two answer","","."]},       #Each comma in text create a answer place, it can be place everywhere.
-   	{"text":["","Three","","."]}          #Each call can have 1, 2 or 3 answer.
+   	{"text":["","Three","","."]}          #Each call can have 1, 2 or 3 answers.
   ],
   "responses":
   [
